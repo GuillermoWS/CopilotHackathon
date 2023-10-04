@@ -8,6 +8,8 @@
 const http = require('http');
 const url = require('url');
 const fs = require('fs');
+const {validateSpanishDNI, validatePhoneNumber, daysBetweenDates } = require('./functions');
+
 
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
@@ -22,11 +24,7 @@ const server = http.createServer((req, res) => {
         var queryData = url.parse(req.url, true).query;
         var phoneNumber = queryData.phoneNumber;
         
-        //validate phoneNumber with Spanish format
-        const validatePhoneNumber = (phoneNumber) => {
-            const regEx = /^(\+34|0034|34)?[ -]*(6|7)[ -]*([0-9][ -]*){8}$/;
-            return regEx.test(phoneNumber);
-        };
+       
         //if phoneNumber is valid return "valid"
         if (validatePhoneNumber(phoneNumber)) {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -45,15 +43,6 @@ const server = http.createServer((req, res) => {
             var queryData = url.parse(req.url, true).query;
             var date1 = queryData.date1;
             var date2 = queryData.date2;
-            //calculate days between dates
-            const daysBetweenDates = (date1, date2) => {
-                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-                const firstDate = new Date(date1);
-                const secondDate = new Date(date2);
-                const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
-                return diffDays;
-            };
-            //return days between dates
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end(daysBetweenDates(date1, date2).toString());
         }
@@ -64,19 +53,8 @@ const server = http.createServer((req, res) => {
             var queryData = url.parse(req.url, true).query;
             var dni = queryData.dni;
             
-            // calculate DNI letter
-            var dniLetter = dni.charAt(dni.length - 1);
-            var dniNumber = dni.substring(0, dni.length - 1);
-            var dniLetterCalc = "TRWAGMYFPDXBNJZSQVHLCKE".charAt(dniNumber % 23);
-
-           //if DNI is valid return "valid"
-            if (dniLetter == dniLetterCalc) {
-                res.end("valid");
-            }
-            //if DNI is not valid return "invalid"
-            else {
-                res.end("invalid");
-            }
+            res.end(validateSpanishDNI(dni));
+            
         }
     else
     //Receive by querystring a parameter called color

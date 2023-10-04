@@ -177,5 +177,53 @@ it('should return the lines that contains the word "Fusce"', (done) => {
    })
 });
 
+//write a test to invoke CalculateMemoryConsumption with query string filename and return the memory consumption
+it('should return the memory consumption', (done) => {
+    http
+    .get('http://localhost:3000/CalculateMemoryConsumption' , (res) => {
+         let data = '';
+         res.on('data', (chunk) => {
+               data += chunk;
+         });
+         res.on('end', () => {
+               //validate the response data have got almost one element
+               assert.equal(data, '0.01');
+               done();
+         });
+   })
+});
+
+
+// write a test to invoke MakeZipFile with query string filename returns the numbers of bytes of the zip file
+it('should return the numbers of bytes of the zip file', (done) => {
+    http
+    .get('http://localhost:3000/MakeZipFile?filename=sample.txt' , (res) => {
+         let data = '';
+         res.on('data', (chunk) => {
+               data += chunk;
+         });
+         res.on('end', () => {
+               //validate the response data have got almost one element
+               assert.equal(data, '29');
+               done();
+         });
+   })
+});
+
+//write a test to invoke RandomEuropeanCountry and return a random european country
+it('should return a random european country', (done) => {
+    http
+    .get('http://localhost:3000/RandomEuropeanCountry' , (res) => {
+         let data = '';
+         res.on('data', (chunk) => {
+               data += chunk;
+         });
+         res.on('end', () => {
+               //validate the response data have got almost one element
+               assert.equal(data.length = 1, true);
+               done();
+         });
+   })
+});
 
 });

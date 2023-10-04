@@ -8,8 +8,7 @@
 const http = require('http');
 const url = require('url');
 const fs = require('fs');
-const {validateSpanishDNI, validatePhoneNumber, daysBetweenDates } = require('./functions');
-
+const {validateSpanishDNI, validatePhoneNumber, daysBetweenDates,memoryUsage,zipFile,getEuropeanCountries } = require('./functions');
 
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
@@ -184,6 +183,39 @@ const server = http.createServer((req, res) => {
 
     }
     else
+    //created a method CalculateMemoryConsumption returns the memory consumption of the process in GB, rounded to 2 decimals
+    if(req.url.startsWith('/CalculateMemoryConsumption'))
+    {
+        
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end(memoryUsage());
+    }
+    else
+    //created a method MakeZipFile that receive by querystring the filename and return the numbers of bytes of the zip file
+    if(req.url.startsWith('/MakeZipFile'))
+    {
+        var queryData = url.parse(req.url, true).query;
+        //get filename var from querystring
+        var filename = queryData.filename;
+        
+        const gzFilename = 'sample.txt.gz';
+
+        fileSizeInBytes_string = zipFile(filename, gzFilename);
+
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end(fileSizeInBytes_string);
+    }
+    else
+    //create a method call RandomEuropeanCountry that will return a random european country
+    if(req.url.startsWith('/RandomEuropeanCountry'))
+    {
+        country = getEuropeanCountries()
+        
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end(country);
+    }
+    else
+
     if (trimmedPath === 'get' && method === 'get') {
         const key = queryStringObject.key;
         if (key) {
